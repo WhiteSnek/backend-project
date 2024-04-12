@@ -68,7 +68,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
         description,
         duration: videoPath.duration,
         views: 0,
-        owner: req.user
+        owner: new mongoose.Types.ObjectId(req.user._id)
     })
     if(!video) throw new ApiError(400,"Error uploading video")
     return res.status(200).json(new ApiResponse(200,video,"Video uploaded successfully"))
