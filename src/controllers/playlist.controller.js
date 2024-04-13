@@ -35,6 +35,13 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
                 as: 'videos'
             }
         },
+        {
+            $addFields:{
+                totalVideos:{
+                    $size: "$videos"
+                }
+            }
+        }
     ])
     return res.status(200).json(new ApiResponse(200,playlists,"User playlists fetched successfully"))
 })
