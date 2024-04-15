@@ -32,7 +32,14 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
                 from: 'videos',
                 localField: 'videos',
                 foreignField: '_id',
-                as: 'videos'
+                as: 'videos',
+                pipeline: [{
+                    $project: {
+                        title: 1,
+                        videoFile: 1,
+                        description: 1,
+                    }
+                }]
             }
         },
         {
@@ -49,7 +56,47 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 const getPlaylistById = asyncHandler(async (req, res) => {
     const {playlistId} = req.params
     //TODO: get playlist by id
-    const playlist = await Playlist.findById(playlistId);
+    const playlist = await Playlist.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(playlistId)
+            }
+        },
+        {
+            $lookup:{
+                from: 'videos',
+                localField: 'videos',
+                foreignField: '_id',
+                as: 'videos',
+                pipeline: [
+                    {
+                        $project: {
+                            title: 1,
+                            videoFile: 1,
+                            description: 1,
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $lookup:{
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                as: 'owner',
+                pipeline: [
+                    {
+                        $project: {
+                            username: 1,
+                            fullname: 1,
+                            email: 1
+                        }
+                    }
+                ]
+            }
+        }
+    ])
     return res.status(200).json(new ApiResponse(200,playlist,"Playlist fetched successfully"))
 })
 
