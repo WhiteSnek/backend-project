@@ -331,6 +331,17 @@ const getUserChannelProfile = asyncHandler( async(req,res)=>{
     .json(new ApiResponse(200, channel[0], "User channel fetched successfully"))
 })
 
+const addVideoToWatchHistory = asyncHandler( async(req,res)=>{
+    const {videoId} = req.params
+    const addVideo = await User.findByIdAndUpdate(req.user._id,{
+        $push: {
+            watchHistory: new mongoose.Types.ObjectId(videoId)
+        }
+    })
+    if(!addVideo) throw new ApiError(400,"Error adding video to watch history")
+    return res.status(200).json(new ApiResponse(200,addVideo,"Video added to watch history successfully!"))
+})
+
 const getWatchHistory = asyncHandler( async(req,res) => {
     const user = await User.aggregate([
         {
@@ -392,5 +403,6 @@ export {
     updateUserAvatar,
     updateUserCoverImage,
     getUserChannelProfile,
-    getWatchHistory
+    getWatchHistory,
+    addVideoToWatchHistory
 }
