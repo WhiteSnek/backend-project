@@ -4,9 +4,30 @@ import cors from 'cors'
 
 const app = express();
 
+const allowedOrigins = [process.env.CORS_ORIGIN];
+
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true
+    origin: function (origin, callback) {
+        if (!origin) {
+            // For requests with no origin (like mobile apps or curl requests)
+            callback(null, true);
+        } else if (allowedOrigins.some(url => origin.startsWith(url))) {
+            // Allow origin if it starts with any of the allowed origins
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.options('*', cors({
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({
