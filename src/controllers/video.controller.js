@@ -55,6 +55,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 const publishAVideo = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
   // TODO: get video, upload to cloudinary, create video
+  console.log(req.files)
   const videoLocalPath = req.files?.videoFile[0]?.path;
   if (!videoLocalPath) throw new ApiError(400, "Video file is required");
   const thumbnailLocalPath = req.files?.thumbnail[0]?.path;

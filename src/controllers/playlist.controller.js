@@ -192,6 +192,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
   const { name, description } = req.body;
   //TODO: update playlist
+  if(!name || !description) throw new ApiError(400,"Name or description is required")
   const updated = await Playlist.findByIdAndUpdate(
     playlistId,
     {
